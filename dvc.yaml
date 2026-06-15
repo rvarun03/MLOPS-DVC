@@ -1,0 +1,39 @@
+stages:
+
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+      - src/prepare.py
+      - data/raw
+    outs:
+      - data/processed_v1
+      - data/processed_v2  
+
+  transform:
+    cmd: python src/transform.py
+    deps:
+      - src/transform.py
+      - src/features_hog.py
+      - data/processed_v1
+    outs:
+      - data/features_v1
+
+  train:
+    cmd: python src/train_mlp.py
+    deps:
+      - src/train_mlp.py
+      - data/features_v1
+    outs:
+      - models_mlp     
+
+  evaluate:
+    cmd: python src/evaluate_mlp.py
+    deps:
+      - src/evaluate_mlp.py
+      - models_mlp
+      - data/features_v1
+    metrics:
+      - reports_mlp/metrics.json
+
+    outs:
+      - reports_mlp/confusion_matrix.png

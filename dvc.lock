@@ -1,0 +1,91 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/prepare.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: d56d5332af569d68fbac8053010fe694.dir
+      size: 302091397
+      nfiles: 1225
+    - path: src/prepare.py
+      hash: md5
+      md5: 3285c71d67a9fe193ec9bb9a3ccd0657
+      size: 788
+    outs:
+    - path: data/processed_v1
+      hash: md5
+      md5: 5d055f736fb7ee05b0a49f9266202b37.dir
+      size: 19536575
+      nfiles: 1187
+    - path: data/processed_v2
+      hash: md5
+      md5: 901d87f91453ba501c01a3694b964354.dir
+      size: 19466204
+      nfiles: 1187
+  transform:
+    cmd: python src/transform.py
+    deps:
+    - path: data/processed_v1
+      hash: md5
+      md5: 5d055f736fb7ee05b0a49f9266202b37.dir
+      size: 19536575
+      nfiles: 1187
+    - path: src/features_hog.py
+      hash: md5
+      md5: a9849a7fbf400bf6cc7513955a0b2502
+      size: 339
+    - path: src/transform.py
+      hash: md5
+      md5: 8985485876d61a90af46bd6212bacdb3
+      size: 1373
+    outs:
+    - path: data/features_v1
+      hash: md5
+      md5: 8a920c1ef1add330b9939871fa523242.dir
+      size: 249280008
+      nfiles: 4
+  train:
+    cmd: python src/train_mlp.py
+    deps:
+    - path: data/features_v1
+      hash: md5
+      md5: 8a920c1ef1add330b9939871fa523242.dir
+      size: 249280008
+      nfiles: 4
+    - path: src/train_mlp.py
+      hash: md5
+      md5: a836e9b68f3917685293f96eff386a0c
+      size: 1720
+    outs:
+    - path: models_mlp
+      hash: md5
+      md5: 8ff82585013a32a556f04d5024f66537.dir
+      size: 162918217
+      nfiles: 2
+  evaluate:
+    cmd: python src/evaluate_mlp.py
+    deps:
+    - path: data/features_v1
+      hash: md5
+      md5: 8a920c1ef1add330b9939871fa523242.dir
+      size: 249280008
+      nfiles: 4
+    - path: models_mlp
+      hash: md5
+      md5: 8ff82585013a32a556f04d5024f66537.dir
+      size: 162918217
+      nfiles: 2
+    - path: src/evaluate_mlp.py
+      hash: md5
+      md5: 7fccba79f84ff5b01c0771bba8b56778
+      size: 1701
+    outs:
+    - path: reports_mlp/confusion_matrix.png
+      hash: md5
+      md5: c6a72efd7df689e8a77b2206fa9ecb16
+      size: 107456
+    - path: reports_mlp/metrics.json
+      hash: md5
+      md5: 2e04821ab74ce0997d9cebb82684adeb
+      size: 39
